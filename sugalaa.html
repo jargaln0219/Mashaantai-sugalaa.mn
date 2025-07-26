@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Сугалааны код шалгах</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #dfe9f3, #ffffff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #444;
+    }
+    input {
+      padding: 10px;
+      font-size: 18px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+  <h1>Сугалааны код шалгах</h1>
+  <input type="text" id="phone" placeholder="Утасны дугаараа оруулна уу" />
+  <button onclick="generateCode()">Код шалгах</button>
+  <div class="result" id="result"></div>
+
+  <script>
+    function generateCode() {
+      const phone = document.getElementById("phone").value.trim();
+      if (!/^[0-9]{8}$/.test(phone)) {
+        document.getElementById("result").innerText = "Зөв утасны дугаар оруулна уу (8 оронтой)";
+        return;
+      }
+
+      async function sha256(text) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+      }
+
+      sha256(phone).then(hash => {
+        const code = "AZ-" + hash.substring(0, 6).toUpperCase();
+        document.getElementById("result").innerText = `Таны сугалааны код: ${code}`;
+      });
+    }
+  </script>
+</body>
+</html>
+
